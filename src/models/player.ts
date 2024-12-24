@@ -1,28 +1,31 @@
 class Player {
-  private fullName: string;
-  private bankRoll: number;
+  private name: string;
+  private bankroll: number;
   private currentBet: number = 0;
   private hand: number[] = [];
-  private cardCount: number = 0;
+  private runningCount: number = 0;
 
-  constructor(fullName: string, bankRoll: number = 5000) {
-    this.fullName = fullName;
-    this.bankRoll = bankRoll;
+  constructor(name: string, bankroll: number = 5000) {
+    this.name = name;
+    this.bankroll = bankroll;
   }
 
-  placeBet(): void {
-    // bet placed will vary based on the card count //
+  placeBet(remainingCards: number): void {
+    // use the true count to determine the bet amount //
+    const trueCount = this.getTrueCount(remainingCards);
+
     let bet: number;
-    // neg inf to 0 //
-    if (this.cardCount <= 0) {
+
+    // neg to 0 //
+    if (trueCount <= 0) {
       bet = 50;
     }
     // 1 - 5 //
-    else if (this.cardCount > 0 && this.cardCount < 6) {
+    else if (trueCount > 0 && trueCount < 6) {
       bet = 100;
     }
     // 6 - 10 //
-    else if (this.cardCount > 5 && this.cardCount < 11) {
+    else if (trueCount > 5 && trueCount < 11) {
       bet = 150;
     }
     // 11 or more //
@@ -30,48 +33,69 @@ class Player {
       bet = 200;
     }
 
-    if (bet > this.bankRoll) {
+    if (bet > this.bankroll) {
       throw new Error("Insufficient bankroll!");
     }
 
     this.currentBet = bet;
-
-    this.bankRoll -= bet;
+    this.bankroll -= bet;
   }
 
   receiveCard(card: number): void {
     this.hand.push(card);
-    this.updateCardCount(card);
+    this.updateRunningCount(card);
   }
 
-  private updateCardCount(card: number): void {
+  private updateRunningCount(card: number): void {
     // High - Lo //
-    if (card >= 2 && card <= 6) this.cardCount++;
-    else if (card === 1 || card >= 10) this.cardCount--;
+    if (card >= 2 && card <= 6) this.runningCount++;
+    else if (card === 1 || card >= 10) this.runningCount--;
+  }
+
+  adjustBankroll(amount: number): void {
+    this.bankroll += amount;
   }
 
   resetHand(): void {
     this.hand = [];
   }
 
-  getCardCount(): number {
-    return this.cardCount;
-  }
-
-  adjustBankroll(amount: number): void {
-    this.bankRoll += amount;
-  }
-
-  getFullName(): string {
-    return this.fullName;
+  getName(): string {
+    return this.name;
   }
 
   getBankroll(): number {
-    return this.bankRoll;
+    return this.bankroll;
   }
 
   getCurrentBet(): number {
     return this.currentBet;
+  }
+
+  getHandTotal(): number {
+    return this.hand.reduce((sum, card) => sum + (card > 10 ? 10 : card), 0);
+  }
+
+  getRunningCount(): number {
+    return this.runningCount;
+  }
+
+  getTrueCount(remainingCards: number): number {
+    // calculate remaining decks //
+    const remainingDecks = remainingCards / 52;
+
+    // avoid dividing by zero //
+    if (remainingDecks === 0) {
+      return this.runningCount;
+    }
+
+    // true count = running count / remaining decks //
+    return Math.round(this.runningCount / remainingDecks);
+  }
+
+  getStats(): void {
+    console.log(`Player: ${this.name}\n`);
+    console.log(`Bankroll: ${this.bankroll}\n`);
   }
 }
 
