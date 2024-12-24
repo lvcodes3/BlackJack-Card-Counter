@@ -1,0 +1,22 @@
+{
+  "name": "blackjack-card-counter",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/typescript": "^0.4.29",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  }
+}
