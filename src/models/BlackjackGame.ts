@@ -10,7 +10,7 @@ class BlackjackGame {
   constructor(decks: number = 6) {
     this.shoe = new BlackjackShoe(decks);
     this.dealer = new Dealer(50000);
-    this.player = new Player("Player 1", 5000);
+    this.player = new Player("Luis", 5000);
   }
 
   private playRound(): void {
@@ -20,15 +20,15 @@ class BlackjackGame {
     this.dealer.resetHand();
     this.player.resetHand();
 
-    // place bet //
-    this.player.placeBet(this.shoe.remainingCards());
+    // player places bet //
+    this.player.placeBet();
 
     // deal initial cards //
-    this.player.receiveCard(this.shoe.dealCard());
+    this.player.receiveCard(this.shoe.dealCard(), this.shoe.remainingCards());
     this.dealer.dealCard(this.shoe);
-    this.player.receiveCard(this.shoe.dealCard());
+    this.player.receiveCard(this.shoe.dealCard(), this.shoe.remainingCards());
     this.dealer.dealCard(this.shoe);
-    console.log(`${this.player.getName()}'s hand: ${this.player["hand"]}`);
+    console.log(`${this.player.getName()}'s hand: ${this.player.getHand()}`);
     console.log(`Dealer shows: ${this.dealer["hand"][0]}`);
 
     // player's turn //
@@ -49,7 +49,7 @@ class BlackjackGame {
       console.log(
         `${this.player.getName()} hits with hand total: ${this.player.getHandTotal()}`
       );
-      this.player.receiveCard(this.shoe.dealCard());
+      this.player.receiveCard(this.shoe.dealCard(), this.shoe.remainingCards());
     }
     console.log(
       `${this.player.getName()} stands with hand total: ${this.player.getHandTotal()}`
@@ -73,14 +73,14 @@ class BlackjackGame {
 
     if (dealerTotal > 21 || playerTotal > dealerTotal) {
       console.log("Player wins this round!");
-      this.player.adjustBankroll(this.player.getCurrentBet() * 2);
-      this.dealer.adjustBankroll(-this.player.getCurrentBet());
+      this.player.adjustBankroll(this.player.getBet() * 2);
+      this.dealer.adjustBankroll(-this.player.getBet());
     } else if (dealerTotal === playerTotal) {
       console.log("It's a tie! Bet is returned to the player.");
-      this.player.adjustBankroll(this.player.getCurrentBet());
+      this.player.adjustBankroll(this.player.getBet());
     } else {
       console.log("Dealer wins this round!");
-      this.dealer.adjustBankroll(this.player.getCurrentBet());
+      this.dealer.adjustBankroll(this.player.getBet());
     }
   }
 
@@ -99,10 +99,10 @@ class BlackjackGame {
       }
     }
 
-    console.log("Game Over!");
-
     this.dealer.getStats();
     this.player.getStats();
+
+    console.log("Game Over!");
   }
 }
 

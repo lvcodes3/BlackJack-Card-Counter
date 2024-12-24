@@ -8,6 +8,10 @@ class Dealer {
     this.bankroll = bankroll;
   }
 
+  /**
+   * MAIN
+   */
+
   dealCard(shoe: BlackjackShoe): number {
     const card = shoe.dealCard();
     this.hand.push(card);
@@ -24,8 +28,16 @@ class Dealer {
     this.hand = [];
   }
 
-  adjustBankroll(amount: number) {
+  adjustBankroll(amount: number): void {
     this.bankroll += amount;
+  }
+
+  /**
+   * GETTERS
+   */
+
+  getHand(): string {
+    return JSON.stringify(this.hand);
   }
 
   getHandTotal(): number {
@@ -33,8 +45,7 @@ class Dealer {
   }
 
   getStats(): void {
-    console.log(`Dealer\n`);
-    console.log(`Bankroll: ${this.bankroll}\n`);
+    console.log(`Dealer Bankroll: ${this.bankroll}\n`);
   }
 }
 

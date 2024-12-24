@@ -6,10 +6,9 @@ class BlackjackShoe {
   constructor(decks: number = 6) {
     this.size = 52 * decks;
     this.decks = decks;
-    this.shuffle();
+    this.shuffle(); // initialize & shuffle the shoe
   }
 
-  // initialize & shuffle the shoe //
   shuffle(): void {
     // reset count //
     this.size = 52 * this.decks;
@@ -17,13 +16,15 @@ class BlackjackShoe {
     // reset shoe //
     this.shoe = [];
 
+    // initialize //
     for (let i = 0; i < this.decks; i++) {
       this.shoe.push(
         ...Array.from({ length: this.size }, (_, idx) => (idx % 13) + 1)
       );
     }
 
-    this.shoe = this.shoe.sort(() => Math.random() - 0.5); // simple shuffle
+    // shuffle //
+    this.shoe = this.shoe.sort(() => Math.random() - 0.5);
   }
 
   dealCard(): number {
