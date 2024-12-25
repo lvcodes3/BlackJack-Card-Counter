@@ -1,5 +1,3 @@
-import BlackjackShoe from "./BlackjackShoe";
-
 class Dealer {
   private bankroll: number;
   private hand: number[] = [];
@@ -9,42 +7,42 @@ class Dealer {
   }
 
   /**
-   * MAIN
+   * MAIN FUNCTIONALITIES
    */
 
-  dealCard(shoe: BlackjackShoe): number {
-    const card = shoe.dealCard();
-    this.hand.push(card);
-    return card;
+  public adjustBankroll(amount: number): void {
+    this.bankroll += amount;
   }
 
-  playTurn(shoe: BlackjackShoe): void {
-    while (this.getHandTotal() < 17) {
-      this.dealCard(shoe);
-    }
-  }
-
-  resetHand(): void {
+  public resetHand(): void {
     this.hand = [];
   }
 
-  adjustBankroll(amount: number): void {
-    this.bankroll += amount;
+  public receiveCard(card: number): void {
+    this.hand.push(card);
   }
 
   /**
    * GETTERS
    */
 
-  getHand(): string {
+  public getBankroll(): number {
+    return this.bankroll;
+  }
+
+  public getFaceCard(): string {
+    return JSON.stringify(this.hand[0]);
+  }
+
+  public getHand(): string {
     return JSON.stringify(this.hand);
   }
 
-  getHandTotal(): number {
+  public getHandTotal(): number {
     return this.hand.reduce((sum, card) => sum + (card > 10 ? 10 : card), 0);
   }
 
-  getStats(): void {
+  public getStats(): void {
     console.log(`Dealer Bankroll: ${this.bankroll}\n`);
   }
 }

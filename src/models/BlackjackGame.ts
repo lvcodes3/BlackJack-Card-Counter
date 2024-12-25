@@ -21,15 +21,19 @@ class BlackjackGame {
     this.player.resetHand();
 
     // player places bet //
-    this.player.placeBet();
+    console.log(
+      `${this.player.getName()} places a bet of $${this.player.placeBet(
+        this.shoe.getTrueCount()
+      )}`
+    );
 
     // deal initial cards //
-    this.player.receiveCard(this.shoe.dealCard(), this.shoe.remainingCards());
-    this.dealer.dealCard(this.shoe);
-    this.player.receiveCard(this.shoe.dealCard(), this.shoe.remainingCards());
-    this.dealer.dealCard(this.shoe);
+    this.player.receiveCard(this.shoe.dealCard());
+    this.dealer.receiveCard(this.shoe.dealCard());
+    this.player.receiveCard(this.shoe.dealCard());
+    this.dealer.receiveCard(this.shoe.dealCard());
     console.log(`${this.player.getName()}'s hand: ${this.player.getHand()}`);
-    console.log(`Dealer shows: ${this.dealer["hand"][0]}`);
+    console.log(`Dealer shows: ${this.dealer.getFaceCard()}`);
 
     // player's turn //
     this.playerTurn();
@@ -37,9 +41,14 @@ class BlackjackGame {
     // dealer's turn //
     this.dealerTurn();
 
+    // show count //
+    console.log(`Running Count: ${this.shoe.getRunningCount()}`);
+    console.log(`True Count: ${this.shoe.getTrueCount()}`);
+
     // determine winner //
     this.determineWinner();
 
+    // updated bankroll //
     console.log(`Player bankroll: ${this.player.getBankroll()}`);
     console.log(`Dealer bankroll: ${this.dealer["bankroll"]}`);
   }
@@ -49,7 +58,7 @@ class BlackjackGame {
       console.log(
         `${this.player.getName()} hits with hand total: ${this.player.getHandTotal()}`
       );
-      this.player.receiveCard(this.shoe.dealCard(), this.shoe.remainingCards());
+      this.player.receiveCard(this.shoe.dealCard());
     }
     console.log(
       `${this.player.getName()} stands with hand total: ${this.player.getHandTotal()}`
@@ -59,7 +68,7 @@ class BlackjackGame {
   private dealerTurn(): void {
     while (this.dealer.getHandTotal() < 17) {
       console.log(`Dealer hits with hand total: ${this.dealer.getHandTotal()}`);
-      this.dealer.dealCard(this.shoe);
+      this.dealer.receiveCard(this.shoe.dealCard());
     }
     console.log(`Dealer stands with hand total: ${this.dealer.getHandTotal()}`);
   }
@@ -93,7 +102,7 @@ class BlackjackGame {
     for (let i = 0; i < rounds; i++) {
       this.playRound();
 
-      if (this.shoe.remainingCards() < 52) {
+      if (this.shoe.getRemainingCardsInShoe() < 52) {
         console.log("Reshuffling the shoe...");
         this.shoe.shuffle();
       }
