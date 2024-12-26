@@ -2,6 +2,8 @@ import BlackjackShoe from "./BlackjackShoe";
 import Dealer from "./Dealer";
 import Player from "./Player";
 
+import { BlackjackCard } from "../types/Blackjack";
+
 class BlackjackGame {
   private shoe: BlackjackShoe;
   private dealer: Dealer;
@@ -36,13 +38,17 @@ class BlackjackGame {
     this.dealer.receiveCard(this.shoe.dealCard());
     this.player.receiveCard(this.shoe.dealCard());
     this.dealer.receiveCard(this.shoe.dealCard());
-    console.log(`${this.player.getName()}'s hand: ${this.player.getHand()}`);
-    console.log(`Dealer shows: ${this.dealer.getFaceCard()}`);
+    console.log(
+      `${this.player.getName()}'s hand: ${JSON.stringify(
+        this.player.getHand()
+      )}`
+    );
+    console.log(`Dealer shows: ${JSON.stringify(this.dealer.getFaceCard())}`);
 
     // player's turn //
     const playerBusted = this.playerTurn(
       this.player.getHandTotal(),
-      this.dealer.getHandTotal()
+      this.dealer.getFaceCard()
     );
 
     // dealer only plays if player did not bust //
@@ -60,102 +66,133 @@ class BlackjackGame {
     );
 
     // display updated bankroll //
-    console.log(`Updated Player bankroll: ${this.player.getBankroll()}`);
-    console.log(`Updated Dealer bankroll: ${this.dealer.getBankroll()}`);
+    console.log(
+      `Updated ${this.player.getName()}: ${JSON.stringify(
+        this.player.getStats()
+      )}`
+    );
+    console.log(`Updated Dealer: ${JSON.stringify(this.dealer.getStats())}`);
   }
 
   private playerTurn(
-    playerHandTotal: number[],
-    dealerHandTotal: number[]
+    playerHandTotals: number[],
+    dealerFaceCard: BlackjackCard
   ): boolean {
-    // while (this.player.getHandTotal() < 17) {
-    //   console.log(
-    //     `${this.player.getName()} hits with hand total: ${this.player.getHandTotal()}`
-    //   );
-    //   this.player.receiveCard(this.shoe.dealCard());
-    // }
-    // console.log(
-    //   `${this.player.getName()} stands with hand total: ${this.player.getHandTotal()}`
-    // );
-    return false;
+    // TODO: replace dealer logic with player logic //
+    console.log(`Dealer Face Card: ${JSON.stringify(dealerFaceCard)}`);
+
+    while (true) {
+      // filter out hand totals that are busted //
+      const validTotals = playerHandTotals.filter((total) => total <= 21);
+
+      // check if there are no valid totals //
+      if (validTotals.length === 0) {
+        console.log(
+          `${this.player.getName()} busts with hand totals: ${JSON.stringify(
+            playerHandTotals
+          )}`
+        );
+        return true;
+      }
+
+      // determine if any valid total is 17 or above //
+      if (validTotals.some((total) => total >= 17)) {
+        console.log(
+          `${this.player.getName()} stands with hand total: ${Math.max(
+            ...validTotals
+          )}`
+        );
+        return false;
+      }
+
+      // if no valid total is 17 or above, player must hit //
+      console.log(
+        `${this.player.getName()} hits with hand totals: ${JSON.stringify(
+          playerHandTotals
+        )}`
+      );
+      this.player.receiveCard(this.shoe.dealCard());
+
+      // update playerHandTotals based on the new card received //
+      playerHandTotals = this.player.getHandTotal();
+    }
   }
 
-  private dealerTurn(dealerHandTotal: number[]): boolean {
-    // while (this.dealer.getHandTotal() < 17) {
-    //   console.log(`Dealer hits with hand total: ${this.dealer.getHandTotal()}`);
-    //   this.dealer.receiveCard(this.shoe.dealCard());
-    // }
-    // console.log(`Dealer stands with hand total: ${this.dealer.getHandTotal()}`);
-    return false;
+  private dealerTurn(dealerHandTotals: number[]): boolean {
+    while (true) {
+      // filter out hand totals that are busted //
+      const validTotals = dealerHandTotals.filter((total) => total <= 21);
+
+      // check if there are no valid totals //
+      if (validTotals.length === 0) {
+        console.log(
+          `Dealer busts with hand totals: ${JSON.stringify(dealerHandTotals)}`
+        );
+        return true;
+      }
+
+      // determine if any valid total is 17 or above //
+      if (validTotals.some((total) => total >= 17)) {
+        console.log(
+          `Dealer stands with hand total: ${Math.max(...validTotals)}`
+        );
+        return false;
+      }
+
+      // if no valid total is 17 or above, dealer must hit //
+      console.log(
+        `Dealer hits with hand totals: ${JSON.stringify(dealerHandTotals)}`
+      );
+      this.dealer.receiveCard(this.shoe.dealCard());
+
+      // update dealerHandTotals based on the new card received //
+      dealerHandTotals = this.dealer.getHandTotal();
+    }
   }
 
   private determineWinner(
     playerBusted: boolean,
     dealerBusted: boolean,
-    playerHandTotal: number[],
-    dealerHandTotal: number[]
+    playerHandTotals: number[],
+    dealerHandTotals: number[]
   ): void {
     const playerTotal: number = this.getHandTotal(
-      playerHandTotal,
-      playerBusted
+      playerBusted,
+      playerHandTotals
     );
     const dealerTotal: number = this.getHandTotal(
-      dealerHandTotal,
-      dealerBusted
+      dealerBusted,
+      dealerHandTotals
     );
 
     console.log(`${this.player.getName()} total: ${playerTotal}`);
     console.log(`Dealer total: ${dealerTotal}`);
 
-    if (playerBusted) {
-      console.log(`Dealer wins this round - ${this.player.getName()} busted!`);
+    if (playerBusted || (dealerTotal > playerTotal && !dealerBusted)) {
+      console.log(
+        playerBusted
+          ? `Dealer wins this round - ${this.player.getName()} busted!`
+          : "Dealer wins this round!"
+      );
       this.dealer.adjustBankroll(this.player.getBet());
-      return;
-    }
-
-    if (dealerBusted) {
-      console.log(`${this.player.getName()} wins this round - Dealer busted!`);
+    } else if (dealerBusted || playerTotal > dealerTotal) {
       console.log(
-        `${this.player.getBet() * 2} is given to ${this.player.getName()}.`
+        dealerBusted
+          ? `${this.player.getName()} wins this round - Dealer busted!`
+          : `${this.player.getName()} wins this round!`
       );
       this.player.adjustBankroll(this.player.getBet() * 2);
       this.dealer.adjustBankroll(-this.player.getBet());
-      return;
-    }
-
-    if (playerTotal === dealerTotal) {
-      console.log("No one wins this round - It is a tie.");
-      console.log(
-        `${this.player.getBet()} is returned to ${this.player.getName()}.`
-      );
-      this.player.adjustBankroll(this.player.getBet());
-    } else if (playerTotal > dealerTotal) {
-      console.log(`${this.player.getName()} wins this round!`);
-      this.player.adjustBankroll(this.player.getBet() * 2);
-      this.dealer.adjustBankroll(-this.player.getBet());
-      return;
     } else {
-      console.log("Dealer wins this round!");
-      this.dealer.adjustBankroll(this.player.getBet());
+      console.log("No one wins this round - It is a tie - Bet is returned!");
+      this.player.adjustBankroll(this.player.getBet());
     }
   }
 
-  private getHandTotal(hand: number[], busted: boolean): number {
-    let greatest: number = -Infinity;
-
-    for (const num of hand) {
-      if (busted) {
-        if (num > greatest) {
-          greatest = num;
-        }
-      } else {
-        if (num > greatest && num <= 21) {
-          greatest = num;
-        }
-      }
-    }
-
-    return greatest;
+  private getHandTotal(busted: boolean, hand: number[]): number {
+    return busted
+      ? Math.max(...hand)
+      : Math.max(...hand.filter((total) => total <= 21));
   }
 
   public startGame(rounds: number): void {
