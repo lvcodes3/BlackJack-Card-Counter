@@ -1,4 +1,4 @@
-import { BlackjackCard } from "../types/Blackjack";
+import { BlackjackCard } from "../types/Blackjack.js";
 
 class Person {
   protected bankroll: number;
@@ -28,6 +28,22 @@ class Person {
 
   public getHand(): BlackjackCard[] {
     return this.hand;
+  }
+
+  public getPrettyHand(): string {
+    let prettyString: string = "";
+
+    for (const card of this.hand) {
+      prettyString += `
+        {
+          Rank: ${card.rank},
+          Suit: ${card.suit},
+          Color: ${card.color}
+        }\n
+      `;
+    }
+
+    return prettyString;
   }
 
   public getHandTotal(): number[] {
@@ -63,10 +79,6 @@ class Person {
       default:
         return [parseInt(rank, 10)]; // numeric cards
     }
-  }
-
-  public getStats(): { bankroll: number } {
-    return { bankroll: this.bankroll };
   }
 }
 

@@ -1,4 +1,4 @@
-import Person from "./Person";
+import Person from "./Person.js";
 
 class Player extends Person {
   private name: string;

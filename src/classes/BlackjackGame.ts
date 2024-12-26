@@ -1,8 +1,8 @@
-import BlackjackShoe from "./BlackjackShoe";
-import Dealer from "./Dealer";
-import Player from "./Player";
+import BlackjackShoe from "./BlackjackShoe.js";
+import Dealer from "./Dealer.js";
+import Player from "./Player.js";
 
-import { BlackjackCard } from "../types/Blackjack";
+// import { BlackjackCard } from "../types/Blackjack.js";
 
 class BlackjackGame {
   private shoe: BlackjackShoe;
@@ -15,22 +15,18 @@ class BlackjackGame {
     this.player = new Player("Luis", 5000);
   }
 
-  private playRound(): void {
-    console.log("\nStarting a new round of Blackjack!\n");
-
-    // reset hands //
-    this.dealer.resetHand();
-    this.player.resetHand();
+  private playRound(roundNumber: number): void {
+    console.log(`\nStarting round ${roundNumber} of Blackjack!\n`);
 
     // show both counts //
     console.log(`Running Count: ${this.shoe.getRunningCount()}`);
-    console.log(`True Count: ${this.shoe.getTrueCount()}`);
+    console.log(`True Count: ${this.shoe.getTrueCount()}\n`);
 
     // player places bet //
     console.log(
       `${this.player.getName()} places a bet of $${this.player.placeBet(
         this.shoe.getTrueCount()
-      )}`
+      )}\n`
     );
 
     // deal initial cards //
@@ -38,17 +34,17 @@ class BlackjackGame {
     this.dealer.receiveCard(this.shoe.dealCard());
     this.player.receiveCard(this.shoe.dealCard());
     this.dealer.receiveCard(this.shoe.dealCard());
-    console.log(
-      `${this.player.getName()}'s hand: ${JSON.stringify(
-        this.player.getHand()
-      )}`
-    );
-    console.log(`Dealer shows: ${JSON.stringify(this.dealer.getFaceCard())}`);
+
+    console.log(`${this.player.getName()}'s hand:`);
+    console.log(this.player.getPrettyHand());
+
+    console.log("Dealer shows:");
+    console.log(this.dealer.getPrettyFaceCard());
 
     // player's turn //
     const playerBusted = this.playerTurn(
-      this.player.getHandTotal(),
-      this.dealer.getFaceCard()
+      this.player.getHandTotal()
+      // this.dealer.getFaceCard()
     );
 
     // dealer only plays if player did not bust //
@@ -67,20 +63,20 @@ class BlackjackGame {
 
     // display updated bankroll //
     console.log(
-      `Updated ${this.player.getName()}: ${JSON.stringify(
-        this.player.getStats()
-      )}`
+      `Updated ${this.player.getName()} Bankroll: ${this.player.getBankroll()}`
     );
-    console.log(`Updated Dealer: ${JSON.stringify(this.dealer.getStats())}`);
+    console.log(`Updated Dealer Bankroll: ${this.dealer.getBankroll()}\n`);
+
+    // reset hands //
+    this.dealer.resetHand();
+    this.player.resetHand();
   }
 
   private playerTurn(
-    playerHandTotals: number[],
-    dealerFaceCard: BlackjackCard
+    playerHandTotals: number[]
+    // dealerFaceCard: BlackjackCard
   ): boolean {
     // TODO: replace dealer logic with player logic //
-    console.log(`Dealer Face Card: ${JSON.stringify(dealerFaceCard)}`);
-
     while (true) {
       // filter out hand totals that are busted //
       const validTotals = playerHandTotals.filter((total) => total <= 21);
@@ -198,26 +194,18 @@ class BlackjackGame {
   public startGame(rounds: number): void {
     console.log("Starting Blackjack Simulation...\n");
 
-    // display stats //
-    this.dealer.getStats();
-    this.player.getStats();
-
-    for (let i = 0; i < rounds; i++) {
+    for (let i = 1; i <= rounds; i++) {
       // play the round //
-      this.playRound();
+      this.playRound(i);
 
-      // check shoe to shuffle if necessary //
+      // shuffle shoe if necessary //
       if (this.shoe.getRemainingCardsInShoe() < 52) {
-        console.log("Reshuffling the shoe...");
+        console.log("Reshuffling the shoe...\n");
         this.shoe.shuffle();
       }
     }
 
-    // display stats //
-    this.dealer.getStats();
-    this.player.getStats();
-
-    console.log("Game Over!");
+    console.log("Game Over!\n");
   }
 }
 

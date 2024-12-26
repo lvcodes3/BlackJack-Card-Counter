@@ -45,10 +45,6 @@ class BlackjackShoe {
     this.shuffle();
   }
 
-  /**
-   * MAIN FUNCTIONALITIES
-   */
-
   public shuffle(): void {
     // reset //
     this.size = 52 * this.decks;
@@ -118,19 +114,15 @@ class BlackjackShoe {
     }
   }
 
-  /**
-   * GETTERS
-   */
-
-  getRemainingCardsInShoe(): number {
+  public getRemainingCardsInShoe(): number {
     return this.size;
   }
 
-  getRunningCount(): number {
+  public getRunningCount(): number {
     return this.runningCount;
   }
 
-  getTrueCount(): number {
+  public getTrueCount(): number {
     return this.trueCount;
   }
 }
