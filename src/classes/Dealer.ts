@@ -14,10 +14,10 @@ class Dealer extends Person {
   public getPrettyFaceCard(): string {
     return `
       {
-        Rank: ${this.hand[0].rank},
-        Suit: ${this.hand[0].suit},
+        Rank: ${this.hand[0].rank}
+        Suit: ${this.hand[0].suit}
         Color: ${this.hand[0].color}
-      }\n
+      }
     `;
   }
 }

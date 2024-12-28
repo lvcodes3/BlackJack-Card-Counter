@@ -97,14 +97,24 @@ class Person {
   public getPrettyHand(): string {
     let prettyString: string = "";
 
-    for (const card of this.hand) {
-      prettyString += `
-        {
-          Rank: ${card.rank},
-          Suit: ${card.suit},
-          Color: ${card.color}
-        }\n
-      `;
+    for (let i = 0; i < this.hand.length; i++) {
+      if (i !== this.hand.length - 1) {
+        prettyString += `
+          {
+            Rank: ${this.hand[i].rank}
+            Suit: ${this.hand[i].suit}
+            Color: ${this.hand[i].color}
+          }\n
+        `;
+      } else {
+        prettyString += `
+          {
+            Rank: ${this.hand[i].rank}
+            Suit: ${this.hand[i].suit}
+            Color: ${this.hand[i].color}
+          }
+        `;
+      }
     }
 
     return prettyString;
