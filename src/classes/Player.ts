@@ -37,10 +37,6 @@ class Player extends Person {
     return bet;
   }
 
-  /**
-   * GETTERS (inherited from Person)
-   */
-
   public getName(): string {
     return this.name;
   }
